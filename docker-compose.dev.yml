@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: ecommerce_postgres_dev
+    environment:
+      POSTGRES_DB: ecommerce_dev
+      POSTGRES_USER: ecommerce_user
+      POSTGRES_PASSWORD: ecommerce_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+      - ./apps/server/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ecommerce_user -d ecommerce_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: ecommerce_redis_dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data_dev:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Development Server
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: base
+    container_name: ecommerce_server_dev
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://ecommerce_user:ecommerce_password@postgres:5432/ecommerce_dev
+      REDIS_URL: redis://redis:6379
+      PORT: 3001
+      JWT_SECRET: dev_jwt_secret_key_change_in_production
+      STRIPE_SECRET_KEY: sk_test_your_stripe_secret_key
+      RAZORPAY_KEY_ID: your_razorpay_key_id
+      RAZORPAY_KEY_SECRET: your_razorpay_key_secret
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/server/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: bun run dev --filter=server
+    restart: unless-stopped
+
+  # Development Client
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: base
+    container_name: ecommerce_client_dev
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_your_stripe_publishable_key
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/client/node_modules
+      - /app/apps/client/.next
+    depends_on:
+      - server
+    command: bun run dev --filter=client
+    restart: unless-stopped
+
+  # Prisma Studio (Database Management UI)
+  prisma-studio:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: base
+    container_name: ecommerce_prisma_studio
+    ports:
+      - "5555:5555"
+    environment:
+      DATABASE_URL: postgresql://ecommerce_user:ecommerce_password@postgres:5432/ecommerce_dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: bun run db:studio --filter=server
+    restart: unless-stopped
+
+volumes:
+  postgres_data_dev:
+  redis_data_dev:
+
+networks:
+  default:
+    name: ecommerce_dev_network

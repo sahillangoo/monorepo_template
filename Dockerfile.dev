@@ -1,0 +1,52 @@
+# Development Dockerfile for the entire monorepo
+FROM oven/bun:1.2.20-alpine
+
+# Install system dependencies
+RUN apk add --no-cache \
+    libc6-compat \
+    openssl \
+    postgresql-client \
+    git
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json bun.lock* ./
+COPY apps/client/package.json ./apps/client/
+COPY apps/server/package.json ./apps/server/
+COPY packages/ui/package.json ./packages/ui/
+COPY packages/eslint-config/package.json ./packages/eslint-config/
+COPY packages/typescript-config/package.json ./packages/typescript-config/
+
+# Install dependencies
+RUN bun install
+
+# Copy source code
+COPY . .
+
+# Generate Prisma client
+RUN cd apps/server && bunx prisma generate
+
+# Expose ports
+EXPOSE 3000 3001
+
+# Set environment variables
+ENV NODE_ENV=development
+ENV PORT=3000
+ENV SERVER_PORT=3001
+
+# Create a startup script
+RUN echo '#!/bin/sh\n\
+echo "🚀 Starting development environment..."\n\
+echo "📱 Client will be available at: http://localhost:3000"\n\
+echo "🔧 Server will be available at: http://localhost:3001"\n\
+echo "📚 API docs will be available at: http://localhost:3001/docs"\n\
+\n\
+# Start both services in parallel\n\
+bun run dev &\n\
+\n\
+# Wait for both services to be ready\n\
+wait\n\
+' > /app/start-dev.sh && chmod +x /app/start-dev.sh
+
+CMD ["/app/start-dev.sh"]
