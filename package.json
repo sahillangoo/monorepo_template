@@ -17,6 +17,7 @@
     "setup": "bun install && turbo run build"
   },
   "devDependencies": {
+    "bun-types": "latest",
     "prettier": "^3.6.2",
     "turbo": "^2.5.5",
     "typescript": "5.9.2"
@@ -28,5 +29,10 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "prettier-plugin-css-order": "^2.1.2",
+    "prettier-plugin-organize-imports": "^4.2.0",
+    "prettier-plugin-tailwindcss": "^0.6.14"
+  }
 }

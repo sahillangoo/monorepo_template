@@ -5,6 +5,7 @@ Your e-commerce monorepo now has a complete Docker infrastructure for both devel
 ## 🏗️ What's Been Created
 
 ### **Docker Files**
+
 - `Dockerfile.client` - Multi-stage build for Next.js frontend
 - `Dockerfile.server` - Multi-stage build for Hono backend
 - `Dockerfile.dev` - Development environment with hot reloading
@@ -12,12 +13,14 @@ Your e-commerce monorepo now has a complete Docker infrastructure for both devel
 - `docker-compose.prod.yml` - Production services orchestration
 
 ### **Configuration Files**
+
 - `nginx/nginx.conf` - Production reverse proxy with SSL support
 - `.dockerignore` - Optimized Docker builds
 - `env.dev.example` - Development environment template
 - `env.prod.example` - Production environment template
 
 ### **Management Scripts**
+
 - `docker.sh` - Main Docker management script
 - `docker/scripts/dev.sh` - Development environment management
 - `docker/scripts/prod.sh` - Production environment management
@@ -26,6 +29,7 @@ Your e-commerce monorepo now has a complete Docker infrastructure for both devel
 ## 🚀 Quick Start
 
 ### **1. Prerequisites**
+
 ```bash
 # Ensure Docker and Docker Compose are installed
 docker --version
@@ -35,6 +39,7 @@ docker-compose --version
 ```
 
 ### **2. Initial Setup**
+
 ```bash
 # Copy environment files
 cp env.dev.example .env.dev
@@ -46,6 +51,7 @@ nano .env.prod
 ```
 
 ### **3. Start Development Environment**
+
 ```bash
 # Using the main script
 ./docker.sh start
@@ -58,6 +64,7 @@ make quick-start
 ```
 
 ### **4. Start Production Environment**
+
 ```bash
 # Using the main script
 ./docker.sh prod start
@@ -69,6 +76,7 @@ make prod-start
 ## 🛠️ Available Commands
 
 ### **Main Docker Script (`./docker.sh`)**
+
 ```bash
 # Development (default)
 ./docker.sh start              # Start development
@@ -87,6 +95,7 @@ make prod-start
 ```
 
 ### **Make Commands**
+
 ```bash
 make help                      # Show all available commands
 make quick-start               # Setup and start development
@@ -100,6 +109,7 @@ make db-studio                 # Open Prisma Studio
 ```
 
 ### **Direct Script Usage**
+
 ```bash
 # Development
 ./docker/scripts/dev.sh start
@@ -115,6 +125,7 @@ make db-studio                 # Open Prisma Studio
 ## 🌐 Service Access
 
 ### **Development Environment**
+
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:3001
 - **API Docs**: http://localhost:3001/docs
@@ -123,6 +134,7 @@ make db-studio                 # Open Prisma Studio
 - **Redis**: localhost:6379
 
 ### **Production Environment**
+
 - **Frontend**: https://yourdomain.com
 - **Backend API**: https://yourdomain.com/api
 - **API Docs**: https://yourdomain.com/docs
@@ -132,11 +144,13 @@ make db-studio                 # Open Prisma Studio
 ## 🔧 Development Workflow
 
 ### **1. Start Development**
+
 ```bash
 ./docker.sh start
 ```
 
 ### **2. View Logs**
+
 ```bash
 # All services
 ./docker.sh logs
@@ -147,6 +161,7 @@ make db-studio                 # Open Prisma Studio
 ```
 
 ### **3. Execute Commands in Containers**
+
 ```bash
 # Run database migration
 ./docker.sh exec server 'bun run db:migrate'
@@ -159,11 +174,13 @@ make db-studio                 # Open Prisma Studio
 ```
 
 ### **4. Rebuild After Changes**
+
 ```bash
 ./docker.sh rebuild
 ```
 
 ### **5. Stop Development**
+
 ```bash
 ./docker.sh stop
 ```
@@ -171,6 +188,7 @@ make db-studio                 # Open Prisma Studio
 ## 🚀 Production Deployment
 
 ### **1. Prepare SSL Certificates**
+
 ```bash
 mkdir -p nginx/ssl
 # Place your SSL certificates:
@@ -179,6 +197,7 @@ mkdir -p nginx/ssl
 ```
 
 ### **2. Configure Environment**
+
 ```bash
 cp env.prod.example .env.prod
 # Edit .env.prod with production values
@@ -186,17 +205,20 @@ nano .env.prod
 ```
 
 ### **3. Deploy**
+
 ```bash
 ./docker.sh prod start
 ```
 
 ### **4. Scale Services**
+
 ```bash
 ./docker.sh prod scale server 3
 ./docker.sh prod scale client 2
 ```
 
 ### **5. Monitor and Backup**
+
 ```bash
 ./docker.sh prod status
 ./docker.sh prod logs
@@ -206,11 +228,13 @@ nano .env.prod
 ## 🔒 Security Features
 
 ### **Development**
+
 - Local network access only
 - Default passwords (change in production)
 - No SSL encryption
 
 ### **Production**
+
 - SSL/TLS encryption with Nginx
 - Rate limiting on API endpoints
 - Security headers enabled
@@ -221,6 +245,7 @@ nano .env.prod
 ## 📊 Monitoring and Maintenance
 
 ### **Health Checks**
+
 ```bash
 # Check service status
 ./docker.sh status
@@ -232,6 +257,7 @@ nano .env.prod
 ```
 
 ### **Database Management**
+
 ```bash
 # Run migrations
 ./docker.sh exec server 'bun run db:migrate'
@@ -244,6 +270,7 @@ docker-compose -f docker-compose.prod.yml exec -T postgres psql -U ecommerce_use
 ```
 
 ### **Updates**
+
 ```bash
 # Update production services
 ./docker.sh prod update
@@ -257,6 +284,7 @@ docker-compose -f docker-compose.prod.yml exec -T postgres psql -U ecommerce_use
 ### **Common Issues**
 
 1. **Port Conflicts**
+
    ```bash
    # Check what's using the ports
    lsof -i :3000
@@ -265,6 +293,7 @@ docker-compose -f docker-compose.prod.yml exec -T postgres psql -U ecommerce_use
    ```
 
 2. **Container Won't Start**
+
    ```bash
    # Check logs
    ./docker.sh logs
@@ -274,6 +303,7 @@ docker-compose -f docker-compose.prod.yml exec -T postgres psql -U ecommerce_use
    ```
 
 3. **Database Connection Issues**
+
    ```bash
    # Check database health
    ./docker.sh exec postgres pg_isready -U ecommerce_user
@@ -286,6 +316,7 @@ docker-compose -f docker-compose.prod.yml exec -T postgres psql -U ecommerce_use
    ```
 
 ### **Reset Everything**
+
 ```bash
 # Stop all containers
 ./docker.sh stop

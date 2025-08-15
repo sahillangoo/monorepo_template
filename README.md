@@ -37,6 +37,7 @@ bun run dev:server  # Backend on port 3001
 ### Available Commands
 
 #### Root Level Commands
+
 ```bash
 # Development
 bun run dev              # Start both client and server
@@ -63,6 +64,7 @@ bun run setup            # Fresh install and build
 ```
 
 #### Client App Commands
+
 ```bash
 cd apps/client
 
@@ -76,6 +78,7 @@ bun run tailwind:build   # Build Tailwind CSS
 ```
 
 #### Server App Commands
+
 ```bash
 cd apps/server
 

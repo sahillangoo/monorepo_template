@@ -5,6 +5,7 @@ This directory contains Docker configurations for running the e-commerce applica
 ## 🏗️ Architecture
 
 The Docker setup includes:
+
 - **Client**: Next.js frontend application
 - **Server**: Hono backend API with Prisma
 - **Database**: PostgreSQL for data storage
@@ -14,6 +15,7 @@ The Docker setup includes:
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Docker and Docker Compose installed
 - At least 4GB of available RAM
 - Ports 3000, 3001, 5432, 6379 available
@@ -21,12 +23,14 @@ The Docker setup includes:
 ### Development Environment
 
 1. **Copy environment file:**
+
    ```bash
    cp env.dev.example .env.dev
    # Edit .env.dev with your actual values
    ```
 
 2. **Start development environment:**
+
    ```bash
    # Start all services
    docker-compose -f docker-compose.dev.yml up -d
@@ -49,12 +53,14 @@ The Docker setup includes:
 ### Production Environment
 
 1. **Copy environment file:**
+
    ```bash
    cp env.prod.example .env.prod
    # Edit .env.prod with your production values
    ```
 
 2. **Set up SSL certificates:**
+
    ```bash
    mkdir -p nginx/ssl
    # Place your SSL certificates in nginx/ssl/
@@ -63,6 +69,7 @@ The Docker setup includes:
    ```
 
 3. **Start production environment:**
+
    ```bash
    # Load environment variables
    export $(cat .env.prod | xargs)
@@ -82,6 +89,7 @@ The Docker setup includes:
 ## 🛠️ Available Commands
 
 ### Development
+
 ```bash
 # Start development environment
 docker-compose -f docker-compose.dev.yml up -d
@@ -104,6 +112,7 @@ docker-compose -f docker-compose.dev.yml down -v
 ```
 
 ### Production
+
 ```bash
 # Start production environment
 docker-compose -f docker-compose.prod.yml up -d
@@ -125,6 +134,7 @@ docker-compose -f docker-compose.prod.yml down
 ## 🔧 Database Management
 
 ### Development
+
 ```bash
 # Access PostgreSQL
 docker-compose -f docker-compose.dev.yml exec postgres psql -U ecommerce_user -d ecommerce_dev
@@ -143,6 +153,7 @@ docker-compose -f docker-compose.dev.yml exec server bun run db:reset
 ```
 
 ### Production
+
 ```bash
 # Access PostgreSQL
 docker-compose -f docker-compose.prod.yml exec postgres psql -U ecommerce_user -d ecommerce_prod
@@ -157,11 +168,13 @@ docker-compose -f docker-compose.prod.yml exec postgres pg_dump -U ecommerce_use
 ## 📊 Monitoring and Logs
 
 ### View all logs
+
 ```bash
 docker-compose -f docker-compose.dev.yml logs -f
 ```
 
 ### View specific service logs
+
 ```bash
 docker-compose -f docker-compose.dev.yml logs -f server
 docker-compose -f docker-compose.dev.yml logs -f client
@@ -169,6 +182,7 @@ docker-compose -f docker-compose.dev.yml logs -f postgres
 ```
 
 ### Container status
+
 ```bash
 docker-compose -f docker-compose.dev.yml ps
 ```
@@ -176,11 +190,13 @@ docker-compose -f docker-compose.dev.yml ps
 ## 🔒 Security Considerations
 
 ### Development
+
 - Uses default passwords (change in production)
 - Exposes all ports locally
 - No SSL encryption
 
 ### Production
+
 - Use strong, unique passwords
 - SSL/TLS encryption with Nginx
 - Rate limiting on API endpoints
@@ -193,6 +209,7 @@ docker-compose -f docker-compose.dev.yml ps
 ### Common Issues
 
 1. **Port conflicts:**
+
    ```bash
    # Check what's using the ports
    lsof -i :3000
@@ -201,12 +218,14 @@ docker-compose -f docker-compose.dev.yml ps
    ```
 
 2. **Database connection issues:**
+
    ```bash
    # Check database health
    docker-compose -f docker-compose.dev.yml exec postgres pg_isready -U ecommerce_user
    ```
 
 3. **Container won't start:**
+
    ```bash
    # Check container logs
    docker-compose -f docker-compose.dev.yml logs service_name
@@ -222,6 +241,7 @@ docker-compose -f docker-compose.dev.yml ps
    ```
 
 ### Reset Everything
+
 ```bash
 # Stop all containers
 docker-compose -f docker-compose.dev.yml down
@@ -239,6 +259,7 @@ docker-compose -f docker-compose.dev.yml up -d --build
 ## 📝 Environment Variables
 
 ### Required Variables
+
 - `DATABASE_URL`: PostgreSQL connection string
 - `JWT_SECRET`: Secret key for JWT tokens
 - `STRIPE_SECRET_KEY`: Stripe secret key
@@ -246,6 +267,7 @@ docker-compose -f docker-compose.dev.yml up -d --build
 - `RAZORPAY_KEY_SECRET`: Razorpay secret key
 
 ### Optional Variables
+
 - `REDIS_URL`: Redis connection string
 - `NODE_ENV`: Environment (development/production)
 - `PORT`: Server port
@@ -254,6 +276,7 @@ docker-compose -f docker-compose.dev.yml up -d --build
 ## 🔄 Updates and Maintenance
 
 ### Update Dependencies
+
 ```bash
 # Pull latest images
 docker-compose -f docker-compose.dev.yml pull
@@ -263,6 +286,7 @@ docker-compose -f docker-compose.dev.yml up -d --build
 ```
 
 ### Backup and Restore
+
 ```bash
 # Backup database
 docker-compose -f docker-compose.prod.yml exec postgres pg_dump -U ecommerce_user ecommerce_prod > backup_$(date +%Y%m%d_%H%M%S).sql

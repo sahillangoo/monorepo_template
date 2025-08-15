@@ -1,0 +1,27 @@
+{
+  "printWidth": 100,
+  "useTabs": true,
+  "tabWidth": 2,
+  "trailingComma": "none",
+  "singleQuote": true,
+  "bracketSameLine": false,
+  "htmlWhitespaceSensitivity": "ignore",
+  "semi": true,
+  "arrowParens": "avoid",
+  "bracketSpacing": true,
+  "embeddedLanguageFormatting": "auto",
+  "endOfLine": "lf",
+  "plugins": [
+    "prettier-plugin-tailwindcss",
+    "prettier-plugin-css-order",
+    "prettier-plugin-organize-imports"
+  ],
+  "overrides": [
+    {
+      "files": ["*.json", "*.md", "*.toml", "*.yml"],
+      "options": {
+        "useTabs": false
+      }
+    }
+  ]
+}
