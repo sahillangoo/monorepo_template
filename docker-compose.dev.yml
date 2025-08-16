@@ -72,7 +72,7 @@ services:
       target: base
     container_name: ecommerce_client_dev
     ports:
-      - "3000:3000"
+      - "4000:4000"
     environment:
       NODE_ENV: development
       NEXT_PUBLIC_API_URL: http://localhost:3001

@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { hashPassword } from './src/lib/auth.js';
 
 const prisma = new PrismaClient();
 
@@ -57,8 +58,8 @@ async function main() {
 		create: {
 			email: 'test@example.com',
 			name: 'Test User',
-			password: 'hashed_password_here', // In real app, this should be properly hashed
-			role: 'USER'
+			password: await hashPassword('password123'), // Hash the password properly
+			role: 'CUSTOMER'
 		}
 	});
 

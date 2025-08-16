@@ -80,7 +80,7 @@ services:
       dockerfile: Dockerfile.client
     container_name: ecommerce_client_prod
     ports:
-      - "3000:3000"
+      - "4000:4000"
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}

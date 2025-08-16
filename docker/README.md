@@ -18,7 +18,7 @@ The Docker setup includes:
 
 - Docker and Docker Compose installed
 - At least 4GB of available RAM
-- Ports 3000, 3001, 5432, 6379 available
+- Ports 3001, 3001, 5432, 6379 available
 
 ### Development Environment
 
@@ -43,7 +43,7 @@ The Docker setup includes:
    ```
 
 3. **Access services:**
-   - Frontend: http://localhost:3000
+   - Frontend: http://localhost:4000
    - Backend API: http://localhost:3001
    - API Docs: http://localhost:3001/docs
    - Prisma Studio: http://localhost:5555
@@ -212,7 +212,7 @@ docker-compose -f docker-compose.dev.yml ps
 
    ```bash
    # Check what's using the ports
-   lsof -i :3000
+   lsof -i :3001
    lsof -i :3001
    lsof -i :5432
    ```

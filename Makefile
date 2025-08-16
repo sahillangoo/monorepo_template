@@ -126,9 +126,9 @@ db-studio:
 # Quick start commands
 quick-start: setup dev-start
 	@echo "Development environment started!"
-	@echo "Frontend: http://localhost:3000"
-	@echo "Backend: http://localhost:3001"
-	@echo "API Docs: http://localhost:3001/docs"
+	@echo "Frontend: http://localhost:4000"
+@echo "Backend: http://localhost:3001"
+@echo "API Docs: http://localhost:3001/docs"
 	@echo "Prisma Studio: http://localhost:5555"
 
 quick-stop: dev-stop

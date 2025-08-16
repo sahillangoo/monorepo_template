@@ -126,7 +126,7 @@ make db-studio                 # Open Prisma Studio
 
 ### **Development Environment**
 
-- **Frontend**: http://localhost:3000
+- **Frontend**: http://localhost:3001
 - **Backend API**: http://localhost:3001
 - **API Docs**: http://localhost:3001/docs
 - **Prisma Studio**: http://localhost:5555
@@ -287,7 +287,7 @@ docker-compose -f docker-compose.prod.yml exec -T postgres psql -U ecommerce_use
 
    ```bash
    # Check what's using the ports
-   lsof -i :3000
+   lsof -i :3001
    lsof -i :3001
    lsof -i :5432
    ```

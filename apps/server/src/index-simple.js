@@ -5,8 +5,6 @@ import dotenv from 'dotenv';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { secureHeaders } from 'hono/secure-headers';
-
-// Import Better Auth
 import { auth } from './lib/better-auth.js';
 
 // Load environment variables
@@ -14,6 +12,77 @@ dotenv.config();
 
 const app = new OpenAPIHono();
 const prisma = new PrismaClient();
+
+// Database connection check function
+async function checkDatabaseConnection() {
+    try {
+        await prisma.$connect();
+        await prisma.$queryRaw`SELECT 1`;
+        return true;
+    } catch (error) {
+        console.error('❌ Database connection failed:', error.message);
+        return false;
+    }
+}
+
+// Initialize database connection
+let isDatabaseConnected = false;
+
+// Middleware
+app.use('*', logger());
+app.use('*', cors({
+  origin: ['http://localhost:3000', 'http://localhost:4000', 'http://localhost:3001'],
+  allowHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true,
+}));
+app.use('*', secureHeaders());
+
+// Swagger UI
+app.get('/docs', swaggerUI({ url: '/api-docs' }));
+
+// Health check endpoint
+app.openapi(
+	createRoute({
+		method: 'get',
+		path: '/health',
+		responses: {
+			200: {
+				content: {
+					'application/json': {
+						schema: z.object({
+							status: z.string(),
+							message: z.string(),
+							timestamp: z.string(),
+							database: z.object({
+								status: z.string(),
+								connected: z.boolean()
+							})
+						})
+					}
+				},
+				description: 'Health check response'
+			}
+		},
+		tags: ['Health']
+	}),
+	async c => {
+		return c.json({
+			status: 'OK',
+			message: 'server is running',
+			timestamp: new Date().toISOString(),
+			database: {
+				status: isDatabaseConnected ? 'Connected' : 'Disconnected',
+				connected: isDatabaseConnected
+			}
+		});
+	}
+);
+
+// Better Auth routes - Mount all auth endpoints
+app.on(['POST', 'GET'], '/api/auth/**', (c) => {
+  return auth.handler(c.req.raw);
+});
 
 // Authentication middleware
 const authenticateUser = async (c, next) => {
@@ -81,154 +150,7 @@ const requireRole = (requiredRole) => {
   };
 };
 
-// Role middleware helpers
-const requireAdmin = requireRole('ADMIN');
-
-// Database connection check function
-async function checkDatabaseConnection() {
-    try {
-        await prisma.$connect();
-        await prisma.$queryRaw`SELECT 1`;
-        return true;
-    } catch (error) {
-        console.error('❌ Database connection failed:', error.message);
-        return false;
-    }
-}
-
-// Initialize database connection
-let isDatabaseConnected = false;
-
-// Middleware
-app.use('*', logger());
-app.use('*', cors({
-  origin: ['http://localhost:3000', 'http://localhost:4000', 'http://localhost:3001'],
-  allowHeaders: ['Content-Type', 'Authorization'],
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true,
-}));
-app.use('*', secureHeaders());
-
-// Swagger UI
-app.get('/docs', swaggerUI({ url: '/api-docs' }));
-
-// Health check endpoint
-app.openapi(
-	createRoute({
-		method: 'get',
-		path: '/health',
-		responses: {
-			200: {
-				content: {
-					'application/json': {
-						schema: z.object({
-							status: z.string(),
-							message: z.string(),
-							timestamp: z.string(),
-							database: z.object({
-								status: z.string(),
-								connected: z.boolean()
-							})
-						})
-					}
-				},
-				description: 'Health check response'
-			}
-		},
-		tags: ['Health']
-	}),
-	async c => {
-		return c.json({
-			status: 'OK',
-			message: 'server is running',
-			timestamp: new Date().toISOString(),
-			database: {
-				status: isDatabaseConnected ? 'Connected' : 'Disconnected',
-				connected: isDatabaseConnected
-			}
-		});
-	}
-);
-
-// Products endpoint
-app.openapi(
-	createRoute({
-		method: 'get',
-		path: '/api/products',
-		responses: {
-			200: {
-				content: {
-					'application/json': {
-						schema: z.object({
-							message: z.string(),
-							data: z.array(z.any())
-						})
-					}
-				},
-				description: 'Products list'
-			}
-		},
-		tags: ['Products']
-	}),
-	async c => {
-		try {
-			if (!isDatabaseConnected) {
-				console.error('❌ Products endpoint called but database is not connected');
-				return c.json({
-					error: 'Database not connected',
-					message: 'Cannot fetch products - database connection failed'
-				}, 503);
-			}
-
-			const products = await prisma.product.findMany();
-			return c.json({
-				message: 'Products retrieved successfully',
-				data: products
-			});
-		} catch (error) {
-			console.error('❌ Error fetching products:', error);
-			return c.json({
-				error: 'Failed to fetch products',
-				message: error.message
-			}, 500);
-		}
-	}
-);
-
-// Cart endpoint
-app.openapi(
-	createRoute({
-		method: 'get',
-		path: '/api/cart',
-		responses: {
-			200: {
-				content: {
-					'application/json': {
-						schema: z.object({
-							message: z.string(),
-							data: z.array(z.any())
-						})
-					}
-				},
-				description: 'Cart items'
-			}
-		},
-		tags: ['Cart']
-	}),
-	async c => {
-		return c.json({
-			message: 'Cart endpoint - to be implemented',
-			data: []
-		});
-	}
-);
-
-// Better Auth routes - Mount all auth endpoints
-app.on(['POST', 'GET'], '/api/auth/**', (c) => {
-  return auth.handler(c.req.raw);
-});
-
-// Custom protected routes
+// Protected route examples
 app.openapi(
 	createRoute({
 		method: 'get',
@@ -281,7 +203,7 @@ app.openapi(
 		tags: ['Admin']
 	}),
 	authenticateUser,
-	requireAdmin,
+	requireRole('ADMIN'),
 	async (c) => {
 		const users = await prisma.user.findMany({
 			select: {
@@ -303,13 +225,58 @@ app.openapi(
 	}
 );
 
+// Products endpoint
+app.openapi(
+	createRoute({
+		method: 'get',
+		path: '/api/products',
+		responses: {
+			200: {
+				content: {
+					'application/json': {
+						schema: z.object({
+							message: z.string(),
+							data: z.array(z.any())
+						})
+					}
+				},
+				description: 'Products list'
+			}
+		},
+		tags: ['Products']
+	}),
+	async c => {
+		try {
+			if (!isDatabaseConnected) {
+				console.error('❌ Products endpoint called but database is not connected');
+				return c.json({
+					error: 'Database not connected',
+					message: 'Cannot fetch products - database connection failed'
+				}, 503);
+			}
+
+			const products = await prisma.product.findMany();
+			return c.json({
+				message: 'Products retrieved successfully',
+				data: products
+			});
+		} catch (error) {
+			console.error('❌ Error fetching products:', error);
+			return c.json({
+				error: 'Failed to fetch products',
+				message: error.message
+			}, 500);
+		}
+	}
+);
+
 // OpenAPI documentation
 app.doc('/api-docs', {
 	openapi: '3.0.0',
 	info: {
-		title: 'E-commerce API',
+		title: 'E-commerce API with Better Auth',
 		version: '1.0.0',
-		description: 'API documentation for the e-commerce application'
+		description: 'API documentation for the e-commerce application with Better Auth integration'
 	},
 	servers: [
 		{
@@ -338,6 +305,9 @@ app.onError((err, c) => {
         const port = process.env.PORT || 3001;
         console.log(`✅ Server running on port ${port}`);
         console.log(`📱 Health check: http://localhost:${port}/health`);
+        console.log(`🔐 Auth endpoints: http://localhost:${port}/api/auth/*`);
+        console.log(`👤 Profile: http://localhost:${port}/api/profile`);
+        console.log(`👥 Admin users: http://localhost:${port}/api/admin/users`);
         console.log(`🛍️  Products API: http://localhost:${port}/api/products`);
         console.log(`📚 API Docs: http://localhost:${port}/docs`);
         console.log(`🔍 OpenAPI: http://localhost:${port}/api-docs`);

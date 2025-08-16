@@ -4,7 +4,7 @@
 export const config = {
 	// Database
 	database: {
-		url: process.env.DATABASE_URL || 'postgresql://username:password@localhost:5432/ecommerce_db'
+		url: process.env.DATABASE_URL
 	},
 
 	// Server

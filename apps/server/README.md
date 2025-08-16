@@ -49,7 +49,7 @@ bun run start
 
 ## Development
 
-The server runs on port 3001 by default, while the client runs on port 3000. This setup allows for easy development and testing of the full-stack application.
+The server runs on port 3001 by default, while the client runs on port 4000. This setup allows for easy development and testing of the full-stack application without port conflicts.
 
 ## Next Steps
 

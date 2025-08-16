@@ -61,9 +61,9 @@ start_dev() {
     docker-compose -f "$COMPOSE_FILE" up -d
     print_success "Development environment started!"
     print_status "Services available at:"
-    echo "  - Frontend: http://localhost:3000"
-    echo "  - Backend API: http://localhost:3001"
-    echo "  - API Docs: http://localhost:3001/docs"
+    echo "  - Frontend: http://localhost:4000"
+echo "  - Backend API: http://localhost:3001"
+echo "  - API Docs: http://localhost:3001/docs"
     echo "  - Prisma Studio: http://localhost:5555"
     echo "  - Database: localhost:5432"
     echo "  - Redis: localhost:6379"

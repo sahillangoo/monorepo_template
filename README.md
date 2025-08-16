@@ -6,7 +6,7 @@ This is a full-stack e-commerce application built with Turborepo, featuring a Ne
 
 This monorepo contains:
 
-- **`apps/client`**: Next.js frontend application (runs on port 3000)
+- **`apps/client`**: Next.js frontend application (runs on port 4000)
 - **`apps/server`**: Express.js backend API (runs on port 3001)
 - **`packages/ui`**: Shared React components
 - **`packages/eslint-config`**: Shared ESLint configuration
@@ -30,7 +30,7 @@ bun install
 bun run dev
 
 # Or start them individually:
-bun run dev:client  # Frontend on port 3000
+bun run dev:client  # Frontend on port 4000
 bun run dev:server  # Backend on port 3001
 ```
 
@@ -68,7 +68,7 @@ bun run setup            # Fresh install and build
 ```bash
 cd apps/client
 
-bun run dev              # Start Next.js dev server
+bun run dev              # Start Next.js dev server on port 4000
 bun run build            # Build for production
 bun run start            # Start production server
 bun run lint             # Lint code
